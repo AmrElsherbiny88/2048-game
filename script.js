@@ -270,3 +270,67 @@ window.onload = function () {
     document.onkeyup = keyUp;
 //    disableSelection(document.body);
 }
+
+// new
+
+var controller = function () {
+    var startX = 0;
+    var startY = 0;
+    var ready = 0;
+
+    this.start = function (x, y) {
+        ready = 1;
+        startX = x;
+        startY = y;
+    };
+
+    this.move = function (x, y) {
+        if (x - startX > 100 && ready) {
+            gameObj.move(0, 1);
+            ready = 0;
+        } else if (startX - x > 100 && ready) {
+            gameObj.move(0, 0);
+            ready = 0;
+        } else if (startY - y > 100 && ready) {
+            gameObj.move(1, 0);
+            ready = 0;
+        } else if (y - startY > 100 && ready) {
+            gameObj.move(1, 1);
+            ready = 0;
+        }
+    };
+
+    this.end = function () {
+        ready = 0;
+    };
+
+    return {
+        start: this.start,
+        move: this.move,
+        end: this.end
+    };
+}();
+
+window.onload = function () {
+    // Existing code...
+
+    var stage = document.getElementById('stage');
+
+    // Touch event handlers
+    stage.addEventListener('touchstart', function (e) {
+        var touch = e.touches[0];
+        controller.start(touch.clientX, touch.clientY);
+    });
+
+    stage.addEventListener('touchmove', function (e) {
+        e.preventDefault(); // Prevent scrolling
+        var touch = e.touches[0];
+        controller.move(touch.clientX, touch.clientY);
+    });
+
+    stage.addEventListener('touchend', function () {
+        controller.end();
+    });
+
+    // Existing code...
+};
